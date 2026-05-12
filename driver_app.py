@@ -21,8 +21,8 @@ except Exception:
 
 st.set_page_config(page_title="KSM Driver Terminal", page_icon="▣",
                    layout="centered", initial_sidebar_state="collapsed")
-
-DB_PATH             = "fleet.db"
+_APP_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH  = os.path.join(_APP_DIR, "fleet.db")
 FUEL_PRICE_DEFAULT  = 19.85
 MAX_PAYLOAD_KG      = 25_000
 FUEL_BASE_L_PER_100 = 28.0
@@ -179,7 +179,9 @@ def ensure_schema():
             read_at TEXT DEFAULT NULL)""")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_dn_drv ON DriverNotifications(driver_id)")
         conn.commit(); conn.close()
-    except Exception: pass
+     except Exception as e:
+        try: conn.close()
+        except: pass
 
 def get_driver_by_id(did):
     if not db_ok(): return None
